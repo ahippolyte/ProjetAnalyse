@@ -1,61 +1,72 @@
 # Adresse du dossier où vous travaillez
-setwd("~/Documents/université/master2/AnalyseDonnees/projet/code")
+setwd("~/school/AnalyseDonnees/ProjetAnalyse/Code")
 # Packages utilisés dans la suite
 library("FactoMineR")
 library(PCAmixdata)
 library(GGally)
-install.packages("readxl")
 library("readxl")
 
 # Supprimer toutes les variables
 rm(list=ls(all=TRUE))
 # Supprimer tous les graphiques déjà  présents
 graphics.off()
+
 # Chargement des données
-poisson_data <- read_excel("../Data/Projets/poissons.xls")
-data <- poisson_data
-# facteur régimes
-data$REGIME <- as.factor(data$REGIME)
-data$ESPECE <- as.factor(data$ESPECE)
-data$REGIME_CLASS <- as.numeric(data$REGIME)
-data$ESPECE_CLASS <- as.numeric(data$ESPECE)
+data <- read_excel("../../Data/Projets/poissons.xls")
 
+# Suppression des valeurs non assignées
+data <- data[is.na(data$INTE) == FALSE & is.na(data$ESTO)==FALSE & 
+                   is.na(data$BRAN)==FALSE & is.na(data$REIN)==FALSE,]
 
-#poisson_data <- poisson_data[is.na(poisson_data$INTE)==FALSE,]
-#poisson_data <- poisson_data[is.na(poisson_data$ESTO)==FALSE,]
-#poisson_data <- poisson_data[is.na(poisson_data$BRAN)==FALSE,]
-#poisson_data <- poisson_data[is.na(poisson_data$REIN)==FALSE,]
-#poisson_data
-#data <- poisson_data
+# Classe numérique pour le régime et l'espèce
+data$REGIME <- as.numeric(as.factor(data$REGIME))
+data$ESPECE <- as.numeric(as.factor(data$ESPECE))
+
 # Affichage des données
-print(data,digits=4)
-## data$REIN
-## data[is.na(data$REIN)==False,]
+print(data, digits=4)
+
 # Calcul de la moyenne et de l’écart type des variables
-mean <- apply(data[,4:13],2,mean,na.rm=TRUE)
-std <- apply(data[,4:11],2,sd,na.rm=TRUE) #standard deviation
-stat <- rbind(mean,std)
-# Affichage
-print(stat,digits=4)
+mean <- apply(data[,4:11], 2, mean)
+std <- apply(data[,4:11], 2, sd) #standard deviation
+stat <- rbind(mean, std)
 
-# Création des données centrées ...
-datanorm <- sweep(data[,4:11],2,mean,"-")
-# ... et réduites
-datanorm <- sweep(datanorm,2,std,"/")
+# Affichage des statistiques
+print(stat, digits=4)
+
+# Création des données centrées et réduites
+datanorm <- sweep(data[,4:11], 2, mean, "-")
+datanorm <- sweep(datanorm, 2, std, "/")
+# Concaténation des données qualitatives
+datanorm$REGIME = data$REGIME
+datanorm$ESPECE = data$ESPECE
+datanorm <- datanorm[, c(10,9,1:8)]
+
 # Affichage des données centrées - réduites
-print(datanorm,digits=4)
+print(datanorm, digits=4)
 
-# Visualisation des données en description bivariée
-pairs(data[,4:13],na.rm=TRUE)
-# Afficher la matrice de corrélation
-ggcorr(data[,4:13],na.rm=TRUE)
+# Visualisation avec les données brutes
+# Description bivariée
+pairs(data[,2:11])
+# Matrice de corrélation
+ggcorr(data[,2:11])
 # Aller encore plus loin avec ggpairs
-ggpairs(data[,4:12],na.rm=TRUE)
-
+ggpairs(data[,2:11])
 # Matrice des distances entre les individus
-dist(data[,4:11])
+dist(data[,2:11])
 # Corrélation entre les variables
-cor(data[, 4:11])
+cor(data[,2:11])
+
+# Visualisation avec les données centrées réduites
+# Description bivariée
+pairs(datanorm[,1:10])
+# Matrice de corrélation
+ggcorr(datanorm[,1:10])
+# Aller encore plus loin avec ggpairs
+ggpairs(datanorm[,1:10])
+# Matrice des distances entre les individus
+dist(datanorm[,1:10])
+# Corrélation entre les variables
+cor(datanorm[,1:10])
 
 # Analyse en composantes principales sur les données d’origine
 # (scale.unit=FALSE)
