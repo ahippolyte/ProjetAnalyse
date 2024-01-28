@@ -58,32 +58,17 @@ data_rm_log$REGIME_CLASS <- as.numeric(data_rm$REGIME)
 ## data$REIN
 ## data[is.na(data$REIN)==False,]
 ## na.rm=TRUE
-X <- data_full_log
+X <- data_full_log  #data_full, data_rm, data_rm_log
+
 data_full <- X
-# Calcul de la moyenne et de l’écart type des variables pour data_full
-mean <- apply(X[,4:11],2,mean)
-std <- apply(X[,4:11],2,sd) #standard deviation
-stat <- rbind(mean,std)
+
 
 # Calcul de la moyenne et de l’écart type des variables pour data_full_log
 mean_full <- apply(data_full[,4:13],2,mean)
 std_full <- apply(data_full[,4:13],2,sd) #standard deviation
 stat_full <- rbind(mean_full,std_full)
 
-# Calcul de la moyenne et de l’écart type des variables pour data_full_log
-mean_full_log <- apply(data_full_log[,4:11],2,mean)
-std_full_log <- apply(data_full_log[,4:11],2,sd) #standard deviation
-stat_full_log <- rbind(mean_full_log,std_full_log)
 
-# Calcul de la moyenne et de l’écart type des variables pour data_rm
-mean_rm <- apply(data_rm[,4:11],2,mean)
-std_rm <- apply(data_rm[,4:11],2,sd) #standard deviation
-stat_rm <- rbind(mean_rm,std_rm)
-
-# Calcul de la moyenne et de l’écart type des variables pour data_rm_log
-mean_rm_log <- apply(data_rm_log[,4:11],2,mean)
-std_rm_log <- apply(data_rm_log[,4:11],2,sd) #standard deviation
-stat_rm_log <- rbind(mean_rm_log,std_rm_log)
 
 
 # Reshape the vector of standard deviations
@@ -92,9 +77,7 @@ stat_rm_log <- rbind(mean_rm_log,std_rm_log)
 #stat <- rbind(mean_reshaped,std_reshaped)
 # Affichage
 print(stat_full,digits=4)
-print(stat_full_log,digits=4)
-print(stat_rm,digits=4)
-print(stat_rm_log,digits=4)
+
 
 # Création des données centrées data_full...
 datanorm_full <- sweep(data_full[,4:13],2,mean_full,"-")
